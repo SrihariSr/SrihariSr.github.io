@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!--
+  index.html: the home page, showing the profile overview only.
+  The other sections live on their own pages: research.html,
+  projects.html and contact.html. All four share style.css.
+
+  Facts checked on 4 October 2026 against Srihari's GitHub repositories,
+  his CV and his own statements.
+-->
+<html lang="en-GB">
+<head>
+  <!-- Text is UTF-8, so characters like "–" display correctly -->
+  <meta charset="utf-8">
+  <!-- Fits the page to a phone's width instead of shrinking a desktop layout -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Shown in the browser tab and in search results -->
+  <title>Srihari Srinivasan</title>
+  <!-- The summary search engines show under the title -->
+  <meta name="description" content="Srihari Srinivasan, Computer Systems Engineering undergraduate at the University of Warwick. Machine learning systems, GPU kernels and compilers.">
+  <!-- An empty icon, so browsers do not ask for a favicon file that does not exist -->
+  <link rel="icon" href="data:,">
+  <!-- The shared stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- Lets keyboard users jump past the header straight to the content -->
+  <a class="skip" href="#content">Skip to content</a>
+
+  <!-- ================================================================
+       HEADER BAND: name, degree and the menu of pages.
+       On this page the name is the h1 (the page's main heading).
+       ================================================================ -->
+  <header class="masthead">
+    <div class="wrap">
+      <h1 class="site-name"><a href="index.html">Srihari Srinivasan</a></h1>
+      <p class="affiliation">BEng Computer Systems Engineering, University of Warwick</p>
+      <nav class="site-nav" aria-label="Pages">
+        <ul>
+          <!-- aria-current marks this as the page being viewed -->
+          <li><a href="index.html" aria-current="page">Profile</a></li>
+          <li><a href="research.html">Research</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content" class="wrap">
+
+    <!-- ==============================================================
+         OVERVIEW
+         ============================================================== -->
+    <h2 class="section-title">Overview</h2>
+
+    <p class="lead">I am a second-year undergraduate reading Computer Systems Engineering at the University of Warwick. I work on the systems side of machine learning: compilers, GPU and CPU kernels, and empirical studies of where trained models fail.</p>
+
+    <p>My sole-author paper on where a transit classifier trained on Kepler data fails when deployed unchanged on TESS was accepted to the Interp4Discovery workshop at NeurIPS 2026. Alongside research I build tools from first principles, most of all Forge, a machine learning library and deep learning compiler with hand-written GPU kernels, released on PyPI.</p>
+
+    <!-- ==============================================================
+         CURRENTLY
+         ============================================================== -->
+    <h2 class="section-title">Currently</h2>
+
+    <ul class="plain-list">
+      <li>Writing a matrix multiply kernel for Arm's Scalable Matrix Extension in Forge, aiming to outperform Apple Accelerate on the CPU.</li>
+      <li>Proposing a faster native Metal matrix multiply kernel to PyTorch; a prototype is with the maintainers for review.</li>
+      <li>Researching how to detect poisoned documents while a language model is being pretrained.</li>
+    </ul>
+
+    <!-- ==============================================================
+         EDUCATION
+         Uses the two-column "entry" layout: facts on the left,
+         description on the right.
+         ============================================================== -->
+    <h2 class="section-title">Education</h2>
+
+    <article class="entry">
+      <div class="entry-head">
+        <h3 class="entry-title">University of Warwick</h3>
+        <p class="entry-sub">BEng Computer Systems Engineering</p>
+      </div>
+      <div class="entry-meta">
+        <p>2025–2028</p>
+        <p>Coventry, UK</p>
+      </div>
+      <div class="entry-body">
+        <p>Holder of the Warwick Undergraduate Global Excellence Scholarship, awarded on academic merit.</p>
+      </div>
+    </article>
+
+    <!-- ==============================================================
+         EXPERIENCE
+         ============================================================== -->
+    <h2 class="section-title">Experience</h2>
+
+    <article class="entry">
+      <div class="entry-head">
+        <h3 class="entry-title">Tech Mahindra</h3>
+        <p class="entry-sub">AI/ML Intern</p>
+      </div>
+      <div class="entry-meta">
+        <p>Jul–Aug 2026</p>
+        <p>Bengaluru, India</p>
+      </div>
+      <div class="entry-body">
+        <p>Took over and maintained a graph neural network for root cause analysis on telecommunication networks. It models network elements and their dependencies as a graph to find where a cascading fault began, and reached 0.9322 AUROC and 0.8217 AUPRC, with 99.46% top-1 and 99.88% top-3 accuracy at identifying the root cause node.</p>
+        <p>Began extending the pipeline from localisation to diagnosis: inferring why an identified node is degrading and proposing a corrective action, rather than only naming the node. Also advised a separate team building an agentic AI system for telecoms on Tech Mahindra's Orion platform.</p>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- ================================================================
+       FOOTER
+       ================================================================ -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Last updated October 2026.</p>
+    </div>
+  </footer>
+</body>
+</html>

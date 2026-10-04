@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!--
+  research.html: publications and research in progress.
+  NeurIPS figures come from the Stellaris README (github.com/SrihariSr/Stellaris),
+  which the paper is built on. Checked 4 October 2026.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research | Srihari Srinivasan</title>
+  <meta name="description" content="Publications and research in progress by Srihari Srinivasan.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+
+  <!-- HEADER BAND. On this page the name is a paragraph, because the
+       page's own title ("Research") is the h1 further down. -->
+  <header class="masthead">
+    <div class="wrap">
+      <p class="site-name"><a href="index.html">Srihari Srinivasan</a></p>
+      <p class="affiliation">BEng Computer Systems Engineering, University of Warwick</p>
+      <nav class="site-nav" aria-label="Pages">
+        <ul>
+          <li><a href="index.html">Profile</a></li>
+          <li><a href="research.html" aria-current="page">Research</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content" class="wrap">
+    <h1 class="page-title">Research</h1>
+
+    <!-- ==============================================================
+         PUBLICATIONS
+         ============================================================== -->
+    <h2 class="section-title">Publications</h2>
+
+    <!-- ---------------------- NeurIPS 2026 workshop ---------------------- -->
+    <article class="entry">
+      <div class="entry-head">
+        <h3 class="entry-title">Depth-Blind by Design</h3>
+        <p class="entry-sub">An Interpretability Autopsy of a Frozen Kepler Transit Classifier on TESS</p>
+      </div>
+
+      <div class="entry-meta">
+        <p>NeurIPS 2026, Interp4Discovery workshop</p>
+        <p>Sole author</p>
+        <p>Accepted</p>
+        <!-- Add a [paper] link here once the camera-ready version is public -->
+        <p>[<a href="https://github.com/SrihariSr/Stellaris">code</a>]</p>
+      </div>
+
+      <div class="entry-body">
+        <p class="cite">Srihari Srinivasan. Depth-Blind by Design: An Interpretability Autopsy of a Frozen Kepler Transit Classifier on TESS. <i>Interp4Discovery workshop, NeurIPS 2026.</i></p>
+
+        <p><span class="runin">The question.</span> This paper takes a convolutional network trained on data from NASA's Kepler mission, freezes it, deploys it unchanged on data from its successor, TESS, and asks which stage of the pipeline fails when it falls short, and why.</p>
+
+        <p><span class="runin">The pipeline.</span> Light curves are detrended and searched for periodic dips with Box Least Squares, then folded into a global and a local view and scored by a two-branch convolutional network following Shallue and Vanderburg (2018), trained on 6,726 Kepler Objects of Interest. On held-out Kepler data it reaches 0.945 PR-AUC, against 0.918 for an XGBoost baseline built on 19 hand-engineered statistics of the same views. Rule-based vetting and a four-check screen (secondary eclipses, known TESS systematic periods, period aliases and consistency across sectors) follow the network.</p>
+
+        <p><span class="runin">Three TESS populations.</span> On 1,102 confirmed planets the frozen network recovers 62.2% at a score of 0.5 or more with both vetting rules passed. Across 4,002 unresolved TESS Objects of Interest it endorses 1,564 at a score of 0.9 or more; of the 30 highest ranked, 10 survive all four checks, and all 10 are already known candidates, so this is a positive control on the ranking rather than a discovery. Among 474 faint stars absent from the TESS Objects of Interest catalogue, no candidate survives screening.</p>
+
+        <p><span class="runin">What the analysis shows.</span> A ten-seed ablation finds that the local view alone is statistically indistinguishable from the full network (Welch p = 0.83), so the global branch, 86% of the parameters, adds at most 0.005 PR-AUC at 95% confidence. On faint stars, 41.6% of detected periods fall within 10% of TESS's 13.7-day orbital period. Because each input view is normalised by its own minimum, the network sees the shape of a transit but not its depth, and its scores are indifferent to these systematics: a median of 0.030 near 13.7 days against 0.032 elsewhere.</p>
+
+        <!-- Figures copied from the ablation table in the Stellaris README -->
+        <div class="table-scroll">
+          <table>
+            <caption>Ablation over ten training seeds on a fixed split, mean ± standard deviation</caption>
+            <thead>
+              <tr>
+                <th scope="col">Network</th>
+                <th scope="col">Parameters</th>
+                <th scope="col">PR-AUC</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Global view only</td><td>8,914,737</td><td>0.433 ± 0.026</td></tr>
+              <tr><td>Local view only</td><td>1,321,905</td><td>0.943 ± 0.003</td></tr>
+              <tr><td>Both views</td><td>9,710,305</td><td>0.944 ± 0.006</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Every number in the paper is recomputed from committed artefacts by a verification script that exits with an error on any mismatch.</p>
+      </div>
+    </article>
+
+    <!-- ------------------------ IEEE paper, 2023 ------------------------ -->
+    <!-- Linked through its DOI rather than the IEEE Xplore author page,
+         which is currently attached to a different author's profile. -->
+    <article class="entry">
+      <div class="entry-head">
+        <h3 class="entry-title">Understanding User Perception of Biometric Privacy in the Era of Generative AI</h3>
+      </div>
+
+      <div class="entry-meta">
+        <p>IEEE conference, 2023</p>
+        <p>Sole author</p>
+        <p>[<a href="https://doi.org/10.1109/C2I659362.2023.10430931">doi</a>]</p>
+      </div>
+
+      <div class="entry-body">
+        <p class="cite">Srihari Srinivasan. Understanding User Perception of Biometric Privacy in the Era of Generative AI. <i>4th IEEE International Conference on Communication, Computing and Industry 6.0, Bangalore, 2023.</i></p>
+      </div>
+    </article>
+
+    <!-- ==============================================================
+         IN PROGRESS
+         Kept brief on purpose: the method is not described in detail
+         before it is published.
+         ============================================================== -->
+    <h2 class="section-title">In progress</h2>
+
+    <article class="entry">
+      <div class="entry-head">
+        <h3 class="entry-title">Detecting poisoned pretraining data</h3>
+      </div>
+
+      <div class="entry-meta">
+        <p>Since September 2026</p>
+      </div>
+
+      <div class="entry-body">
+        <p>A low-overhead detector that runs inside the training loop to catch poisoned or backdoored documents while a language model is being pretrained, rather than after training has finished. Experiments build on <a href="projects.html#aether">Aether</a>, my from-scratch language model.</p>
+      </div>
+    </article>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Last updated October 2026.</p>
+    </div>
+  </footer>
+</body>
+</html>

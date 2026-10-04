@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<!--
+  projects.html: detailed descriptions of each project.
+  Every figure is copied from the project's own README, its source code,
+  or (for PyTorch) Srihari's benchmarks and issue #198182. Checked
+  4 October 2026. If a README changes, update the matching figure here.
+-->
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Projects | Srihari Srinivasan</title>
+  <meta name="description" content="Projects by Srihari Srinivasan: Forge, a PyTorch Metal kernel contribution, Foundry, Aether and Pitwall.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+
+  <header class="masthead">
+    <div class="wrap">
+      <p class="site-name"><a href="index.html">Srihari Srinivasan</a></p>
+      <p class="affiliation">BEng Computer Systems Engineering, University of Warwick</p>
+      <nav class="site-nav" aria-label="Pages">
+        <ul>
+          <li><a href="index.html">Profile</a></li>
+          <li><a href="research.html">Research</a></li>
+          <li><a href="projects.html" aria-current="page">Projects</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content" class="wrap">
+    <h1 class="page-title">Projects</h1>
+
+    <!-- ================================================================
+         FORGE
+         Source: Forge README and PyPI (forge-dl 0.3.0)
+         ================================================================ -->
+    <article class="entry" id="forge">
+      <div class="entry-head">
+        <h2 class="entry-title">Forge</h2>
+        <p class="entry-sub">A machine learning library and deep learning compiler, written from scratch</p>
+      </div>
+
+      <div class="entry-meta">
+        <p>Python, C, CUDA, HIP</p>
+        <p>forge-dl 0.3.0 on PyPI</p>
+        <p>[<a href="https://github.com/SrihariSr/Forge">code</a>] [<a href="https://pypi.org/project/forge-dl/">PyPI</a>]</p>
+      </div>
+
+      <div class="entry-body">
+        <p>Forge is a machine learning library written in Python with no PyTorch, TensorFlow or NumPy in its core, together with a deep learning compiler that generates C. Every operation, from the autograd engine to the attention mechanism, is implemented from first principles.</p>
+
+        <p><span class="runin">The library.</span> Reverse-mode automatic differentiation on a define-by-run graph, a module system with automatic parameter registration, SGD with momentum and Adam, and a decoder-only transformer with multi-head causal self-attention, LayerNorm, GELU and pre-norm residual blocks. Every operation is checked against central finite differences in float64. That check caught a tensor slice that had silently cut the embedding layer out of the graph while the loss still fell. A 550,977-parameter GPT trained on the tinyshakespeare corpus, with data-parallel training across 8 CPU cores, brought its loss from 3.66 to 1.44 over 33,113 steps.</p>
+
+        <p><span class="runin">The compiler.</span> A separate front end records a computation graph, groups element-wise operations that can share one pass over memory, writes C for each group, compiles it with gcc and loads it back through ctypes. An intermediate value is fused away only if exactly one operation consumes it. Every optimised path is checked against the unoptimised one before it is timed. On an Apple M4 Max, fusion takes a 16-million-element workload from 8.1 ms to 3.4 ms, and fusion with the threaded matrix multiply takes a four-layer MLP from 43.0 ms to 1.3 ms.</p>
+
+        <p><span class="runin">CPU matrix multiply.</span> Reordering the loops gave the largest single gain, 12.2 times, without changing any arithmetic; splitting the output rows across threads gave a further 8.4 times. Cache blocking measured slightly slower on its own, and hand-written NEON intrinsics were slower than Clang's auto-vectorised scalar loop (48 ms against 32 ms), so the scalar loop was kept. At 768 × 768 the result runs in 3.9 ms against 348.0 ms for a naive loop, reaching 234 GFLOPS against 351 for Apple Accelerate, which uses hand-tuned assembly and Apple's AMX matrix units.</p>
+
+        <p><span class="runin">GPU kernels.</span> Matrix multiplication dispatches to Apple Metal, cuBLAS, rocBLAS, Apple Accelerate or pure Python, chosen by the hardware available and the size of the problem. Three kernels are written by hand in CUDA and checked against a double-precision reference on six shapes, several of them non-square, before any timing.</p>
+
+        <!-- Figures copied from the "CUDA kernels" table in the Forge README -->
+        <div class="table-scroll">
+          <table>
+            <caption>CUDA matrix multiply on a Tesla T4, time in milliseconds</caption>
+            <thead>
+              <tr>
+                <th scope="col">Size</th>
+                <th scope="col">Naive</th>
+                <th scope="col">Tiled</th>
+                <th scope="col">Register blocked</th>
+                <th scope="col">cuBLAS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>512 × 512</td><td>0.72</td><td>0.46</td><td>0.15</td><td>0.08</td></tr>
+              <tr><td>1024 × 1024</td><td>5.32</td><td>2.76</td><td>0.79</td><td>0.42</td></tr>
+              <tr><td>2048 × 2048</td><td>41.70</td><td>27.01</td><td>7.30</td><td>3.90</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Shared-memory tiling gave 1.5 times, and register blocking, where each thread computes a 4 × 4 patch of output held in registers, a further 3.7 times, reaching 2718 GFLOPS at 1024 × 1024. cuBLAS remains 1.9 times faster, mostly through tensor cores, which plain CUDA cannot address. Absolute times on a shared Colab T4 varied by about 35% between runs, while the ratios held. Going through the library copies data to and from the GPU on every call, which at these sizes costs several times the multiply itself, so the dispatcher sends small matrices to the CPU. The same kernels are ported to HIP for AMD GPUs; that path is written and logic-checked but has not yet run on AMD hardware.</p>
+
+        <p><span class="runin">Option pricing.</span> Monte Carlo pricing of ordinary, Asian and barrier options runs on the same tensor library, including its own Box-Muller normal sampling and antithetic variates. The simulated ordinary call prices at 10.4525 against the Black-Scholes value of 10.4506, and the geometric Asian at 5.6532 against its closed form of 5.6411.</p>
+      </div>
+    </article>
+
+    <!-- ================================================================
+         PYTORCH CONTRIBUTION
+         Source: Srihari's benchmarks (Sep 2026) and PyTorch issue #198182
+         ================================================================ -->
+    <article class="entry" id="pytorch">
+      <div class="entry-head">
+        <h2 class="entry-title">PyTorch: native Metal matrix multiply</h2>
+        <p class="entry-sub">An open-source contribution to PyTorch's Apple GPU backend</p>
+      </div>
+
+      <div class="entry-meta">
+        <p>Metal, Python</p>
+        <p>Under review</p>
+        <p>[<a href="https://github.com/pytorch/pytorch/issues/198182">issue</a>] [<a href="https://gist.github.com/SrihariSr/f012cea8afd73941932d6e9f0a10c4f3">benchmarks</a>]</p>
+      </div>
+
+      <div class="entry-body">
+        <p>On Apple GPUs, PyTorch runs matrix multiplication either through MPSGraph or through its own native Metal kernels. Benchmarking both on an Apple M4 Max with a September 2026 nightly build, I found that the native kernel took 6.0 to 9.8 times as long as MPSGraph on typical shapes (a median of 7.9 times, roughly 1.1 to 1.4 TFLOPS against 7.8 to 12.0), and 11.6 to 15.4 times as long on shapes with a small output and a large inner dimension, such as 25 × 40000 × 25. The two paths agreed numerically.</p>
+
+        <p>I opened issue #198182 proposing a rewrite of the native kernels with simdgroup matrices. A maintainer asked for the rewrite as a gist, noting that if it matched Apple's MPP path, PyTorch should simply dispatch to it, and I committed to comparing it against the current Metal kernel, MPSGraph and MPP across float32, float16 and bfloat16. I have written the kernel and shared it with the maintainers, and it is awaiting their review.</p>
+      </div>
+    </article>
+
+    <!-- ================================================================
+         FOUNDRY
+         Source: Foundry README
+         ================================================================ -->
+    <article class="entry" id="foundry">
+      <div class="entry-head">
+        <h2 class="entry-title">Foundry</h2>
+        <p class="entry-sub">One sentence in, an offline text classifier out</p>
+      </div>
+
+      <div class="entry-meta">
+        <p>Python, PyTorch, Claude API</p>
+        <p>Push to Prod hackathon, Bengaluru</p>
+        <p>[<a href="https://github.com/SrihariSr/Foundry">code</a>]</p>
+      </div>
+
+      <div class="entry-body">
+        <p>Training a small classifier is easy; collecting thousands of labelled examples is what takes weeks. Foundry takes a one-sentence description of a classification task, has Claude write the label scheme and a training corpus of around 4,000 examples, trains a small network on it, and emits a single Python file with the weights embedded. The emitted classifier needs nothing beyond the standard library and gives the same answer every time. Built at Push to Prod, a hackathon run by Anthropic and Elevation Capital in Bengaluru.</p>
+
+        <p><span class="runin">How it works.</span> Text is broken into character n-grams, hashed to 4,096 dimensions and fed to a network with one 128-unit hidden layer, trained with Adam for 30 epochs. First-layer weights are stored as int8 with one scale per hidden unit, and a parity check confirms quantisation changes no predictions. Hashing uses zlib.crc32 rather than Python's built-in hash, which is randomised per process and would silently change the features in a fresh interpreter.</p>
+
+        <!-- Figures copied from the Results table in the Foundry README -->
+        <div class="table-scroll">
+          <table>
+            <caption>Three tasks from the same pipeline, changing only the input sentence (100 held-out examples each)</caption>
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Disaster triage</th>
+                <th scope="col">SMS intent</th>
+                <th scope="col">Supermarket order</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Foundry accuracy</td><td>0.95</td><td>1.00</td><td>0.94</td></tr>
+              <tr><td>Claude Haiku 4.5, zero-shot</td><td>0.97</td><td>0.98</td><td>not measured</td></tr>
+              <tr><td>Foundry median latency</td><td>2.4 ms</td><td>2.3 ms</td><td>2.6 ms</td></tr>
+              <tr><td>Haiku median latency</td><td>842 ms</td><td>783 ms</td><td>not measured</td></tr>
+              <tr><td>Classifier size</td><td>691 KB</td><td>690 KB</td><td>691 KB</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><span class="runin">Evaluation.</span> Pooled over 200 held-out examples, Foundry and Haiku each got 195 right (McNemar's exact test, p = 1.0), which rules out a large gap but not a small one. A million classifications would cost $351.95 through Haiku on the disaster task, against nothing for the offline file. The held-out sets are generated by the same model as the training data, so the repository also carries independently written sets; on ten human-written messages accuracy falls to 0.60. That comparison gave the most useful finding: accuracy on the generated test set stops improving at 200 training examples, while accuracy on the independent set keeps improving up to 4,000, so judging on generated data alone would have cost roughly 17 points on real text.</p>
+      </div>
+    </article>
+
+    <!-- ================================================================
+         AETHER
+         Source: Aether README and model/config.py (aether_medium)
+         ================================================================ -->
+    <article class="entry" id="aether">
+      <div class="entry-head">
+        <h2 class="entry-title">Aether</h2>
+        <p class="entry-sub">A 63.5M-parameter language model trained from scratch on a laptop</p>
+      </div>
+
+      <div class="entry-meta">
+        <p>Python, PyTorch</p>
+        <p>Apple M4 Max</p>
+        <p>[<a href="https://github.com/SrihariSr/Aether">code</a>]</p>
+      </div>
+
+      <div class="entry-body">
+        <p>Aether is a decoder-only transformer trained from random initialisation, with every component written by hand in PyTorch. It has 12 layers, 8 attention heads, a 512-dimensional embedding and a 512-token context, with weight-tied embeddings, pre-norm residual blocks, GELU feed-forward layers and no biases in its linear or normalisation layers.</p>
+
+        <p><span class="runin">Training.</span> OpenWebText was tokenised with GPT-2's byte-pair encoding in parallel across 12 CPU cores and stored as memory-mapped binary files, so batches are sampled without copying. Training used AdamW with linear warmup and cosine decay, gradient clipping, and weight decay on weight matrices only, with residual projections initialised at a scale of 1/√(2 × layers) to keep variance stable through the residual stream. It sustained around 11,150 tokens per second on an Apple M4 Max and reached a validation loss of 4.14, a perplexity of 63.</p>
+
+        <p>Text is generated with top-k and top-p sampling and a repetition penalty over a rolling 64-token window. Aether is now the training base for my <a href="research.html">research on detecting poisoned pretraining data</a>.</p>
+      </div>
+    </article>
+
+    <!-- ================================================================
+         PITWALL
+         Source: repository description and source code (agents/,
+         feed_adapter/, mcp_server/). The repository README is empty.
+         ================================================================ -->
+    <article class="entry" id="pitwall">
+      <div class="entry-head">
+        <h2 class="entry-title">Pitwall</h2>
+        <p class="entry-sub">Multi-agent Formula 1 race strategy</p>
+      </div>
+
+      <div class="entry-meta">
+        <p>Python, Gemini, MCP</p>
+        <p>Apr–Jun 2026</p>
+        <p>In development</p>
+        <p>[<a href="https://github.com/SrihariSr/Pitwall">code</a>]</p>
+      </div>
+
+      <div class="entry-body">
+        <p>Pitwall produces lap-by-lap pit-stop recommendations for a Formula 1 car, each with a written justification. A replay adapter streams a historical race from FastF1 onto an event bus in race-time order, at an adjustable playback speed, and a custom MCP server exposes the live race state, lap histories, tyre stints, gaps to rivals, weather and historical safety car rates as tools.</p>
+
+        <p>Six specialist Gemini subagents (a tyre strategist, gap analyst, Monte Carlo simulator, safety car oracle, weather watcher and rival modeller) assess the race in parallel. The Monte Carlo subagent simulates the rest of the race 10,000 times for both boxing now and staying out, with tyre wear that accelerates past a compound-specific cliff. An orchestrator, running a stronger model, wakes every few laps and on specific triggers, fuses the specialists' structured outputs into a single decision, and logs each one for auditing after the race. A narrator then turns the decision into the short radio message a race engineer would give the driver.</p>
+      </div>
+    </article>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Last updated October 2026.</p>
+    </div>
+  </footer>
+</body>
+</html>

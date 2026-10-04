@@ -1,0 +1,519 @@
+/* ======================================================================
+   style.css
+   One stylesheet shared by every page, so a change here applies to the
+   whole site. Each HTML page loads it with:
+       <link rel="stylesheet" href="style.css">
+   ====================================================================== */
+
+
+/* ----------------------------------------------------------------------
+   COLOURS
+   A calm palette of slate navy, soft mist and a muted sage green.
+   Defined once here as variables and reused everywhere below.
+   ---------------------------------------------------------------------- */
+:root {
+  --navy: #1e3a5f;        /* header band, headings and table rules            */
+  --ink: #1f2933;         /* body text: a deep slate, softer than pure black  */
+  --muted: #5b6773;       /* secondary text: notes, side columns, footer      */
+  --link: #2c5d8a;        /* links: a steel blue that reads clearly on white  */
+  --sage: #7a9a88;        /* small accents: the line under the header, bullets */
+  --sage-light: #a9c4b5;  /* the underline marking the current page in the menu */
+  --mist: #edf2f7;        /* pale blue-grey fill for table headers and footer */
+  --rule: #d6dee6;        /* thin dividing lines between entries              */
+  --paper: #ffffff;       /* page background                                  */
+}
+
+
+/* ----------------------------------------------------------------------
+   PAGE BASICS
+   ---------------------------------------------------------------------- */
+
+/* Stops phones enlarging text on their own when rotated, and tells the
+   browser the design is meant for a light background. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  color-scheme: light;
+}
+
+/* Times New Roman everywhere. Devices without it (Linux, some Android
+   phones) fall back to Liberation Serif or Nimbus Roman, which are drawn
+   to the same measurements, so the layout does not move. */
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Times New Roman", Times, "Liberation Serif", "Nimbus Roman", serif;
+  font-size: 1.1875rem;   /* 19px: Times has small letters, so it is set a little larger than usual */
+  line-height: 1.55;      /* generous spacing between lines suits serif text */
+  font-kerning: normal;   /* uses the font's own spacing between letter pairs */
+}
+
+/* The centred column that holds the content of each band (header, main,
+   footer). 47em at this size keeps the reading column to roughly 70 to 75
+   characters per line, which is comfortable to read. */
+.wrap {
+  max-width: 47em;
+  margin: 0 auto;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+
+/* ----------------------------------------------------------------------
+   LINKS
+   ---------------------------------------------------------------------- */
+a {
+  color: var(--link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.16em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* A clear outline when someone moves through the page with the Tab key */
+a:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+
+/* "Skip to content" link for keyboard and screen reader users. It sits
+   off-screen until it receives keyboard focus, then appears at the top. */
+.skip {
+  position: absolute;
+  left: -999em;
+}
+.skip:focus {
+  left: 1em;
+  top: 1em;
+  background: var(--paper);
+  padding: 0.3em 0.6em;
+  z-index: 10;
+}
+
+
+/* ----------------------------------------------------------------------
+   HEADER BAND (the "masthead")
+   The one bold element of the design: a slate navy band carrying the
+   name, with a thin sage line along its bottom edge.
+   ---------------------------------------------------------------------- */
+.masthead {
+  background: var(--navy);
+  color: #ffffff;
+  border-bottom: 4px solid var(--sage);
+}
+
+.masthead .wrap {
+  padding-top: 2.6em;
+  padding-bottom: 1.1em;
+}
+
+/* The name. It is an h1 on the home page and a plain paragraph on the
+   other pages (where the page's own title is the h1), so both share this
+   class to look identical. */
+.site-name {
+  font-size: 2.35em;
+  font-weight: normal;    /* Times bold is heavy at this size, so regular weight is used */
+  line-height: 1.1;
+  margin: 0;
+}
+
+.site-name a {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.affiliation {
+  margin: 0.35em 0 0;
+  font-style: italic;
+  color: #bccbdb;          /* a pale blue-grey that sits quietly on the navy */
+}
+
+/* The menu of pages. "gap" spaces the links out and "flex-wrap" lets them
+   drop onto a second line on narrow screens. */
+.site-nav ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 1.7em;
+  margin: 1.7em 0 0;
+  padding: 0;
+}
+
+.site-nav a {
+  color: #e3eaf2;
+  text-decoration: none;
+  padding-bottom: 0.2em;
+  border-bottom: 2px solid transparent;   /* invisible until hovered or current */
+}
+
+.site-nav a:hover {
+  border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+/* The page you are currently on is marked with a sage underline.
+   aria-current="page" also tells screen readers which page this is. */
+.site-nav a[aria-current="page"] {
+  color: #ffffff;
+  border-bottom-color: var(--sage-light);
+}
+
+.masthead a:focus-visible {
+  outline-color: #ffffff;
+}
+
+
+/* ----------------------------------------------------------------------
+   MAIN CONTENT AND HEADINGS
+   ---------------------------------------------------------------------- */
+main.wrap {
+  padding-top: 3em;
+  padding-bottom: 4em;
+}
+
+/* The title of each page, e.g. "Research" */
+.page-title {
+  font-size: 1.9em;
+  font-weight: normal;
+  color: var(--navy);
+  line-height: 1.2;
+  margin: 0 0 0.8em;
+}
+
+/* A section heading inside a page, e.g. "Publications", with a thin line
+   beneath it to mark where the section starts. */
+.section-title {
+  font-size: 1.3em;
+  font-weight: normal;
+  color: var(--navy);
+  margin: 2.4em 0 1em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* An entry straight after a section heading needs less space above it,
+   because the heading already provides the gap. */
+.section-title + .entry {
+  padding-top: 1em;
+}
+
+/* A section heading straight after the page title sits close beneath it */
+.page-title + .section-title {
+  margin-top: 0;
+}
+
+/* The first entry straight after a page title also needs less space */
+.page-title + .entry {
+  padding-top: 0.4em;
+}
+
+/* A section heading straight after an entry needs less space above it,
+   because the entry already ends with padding. */
+.entry + .section-title {
+  margin-top: 0.4em;
+}
+
+/* No extra space above the very first section heading on a page */
+main > .section-title:first-child {
+  margin-top: 0;
+}
+
+/* The opening paragraph on the home page, set slightly larger */
+.lead {
+  font-size: 1.1em;
+}
+
+/* Bulleted lists use small sage bullets */
+.plain-list {
+  margin: 0.8em 0 0;
+  padding-left: 1.2em;
+}
+.plain-list li {
+  margin-bottom: 0.45em;
+}
+.plain-list li::marker {
+  color: var(--sage);
+}
+
+
+/* ----------------------------------------------------------------------
+   ENTRIES
+   Every project, paper and job uses the same two-column layout, like a
+   typeset academic CV: a narrow side column on the left holds the facts
+   (dates, languages, links) and the main column holds the description.
+
+   The layout uses CSS grid with named areas:
+     on wide screens   meta | head
+                       meta | body
+     on narrow screens head
+                       meta
+                       body
+   ---------------------------------------------------------------------- */
+.entry {
+  display: grid;
+  grid-template-columns: 9.5em minmax(0, 1fr);   /* side column, then main column */
+  grid-template-areas:
+    "meta head"
+    "meta body";
+  column-gap: 2.5em;
+  padding: 2.2em 0;
+}
+
+/* A thin line between one entry and the next (not above the first) */
+.entry + .entry {
+  border-top: 1px solid var(--rule);
+}
+
+.entry-head { grid-area: head; }
+.entry-meta { grid-area: meta; }
+.entry-body { grid-area: body; }
+
+.entry-title {
+  font-size: 1.25em;
+  font-weight: bold;
+  color: var(--navy);
+  line-height: 1.25;
+  margin: 0;
+}
+
+/* One-line italic summary under an entry's title */
+.entry-sub {
+  margin: 0.2em 0 0.9em;
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* The side column: smaller grey text, one fact per line */
+.entry-meta {
+  font-size: 0.88em;
+  color: var(--muted);
+  line-height: 1.45;
+  padding-top: 0.3em;
+}
+
+.entry-meta p {
+  margin: 0 0 0.4em;
+}
+
+/* "Run-in" headings: the italic words that open a paragraph, such as
+   "The compiler." This is how academic papers label paragraphs. */
+.runin {
+  font-style: italic;
+  color: var(--navy);
+}
+
+/* A citation line for a publication */
+.cite {
+  margin: 0 0 1em;
+}
+
+
+/* ----------------------------------------------------------------------
+   TABLES
+   Styled after LaTeX's "booktabs" package: heavier lines above and below,
+   a lighter line under the header row, no vertical lines. The header row
+   has a pale mist fill to tie it to the colour scheme.
+   ---------------------------------------------------------------------- */
+
+/* On a narrow phone the table scrolls sideways inside this box, instead
+   of making the whole page scroll sideways. */
+.table-scroll {
+  overflow-x: auto;
+  margin: 1.2em 0 1.2em;
+}
+
+table {
+  border-collapse: collapse;     /* rows share one border line instead of two */
+  width: 100%;
+  font-size: 0.93em;
+  font-variant-numeric: lining-nums tabular-nums;   /* equal-width digits, so columns of numbers line up */
+}
+
+caption {
+  caption-side: top;
+  text-align: left;
+  font-style: italic;
+  color: var(--muted);
+  padding-bottom: 0.5em;
+}
+
+thead tr {
+  background: var(--mist);
+  border-top: 1.5px solid var(--navy);       /* top rule: heavier    */
+  border-bottom: 0.75px solid var(--navy);   /* middle rule: lighter */
+}
+
+tbody tr:last-child {
+  border-bottom: 1.5px solid var(--navy);    /* bottom rule: heavier */
+}
+
+th, td {
+  padding: 0.35em 0.7em;
+  text-align: right;       /* numbers right-aligned so their digits line up */
+  white-space: nowrap;
+}
+
+th {
+  font-weight: normal;
+  white-space: normal;     /* long header labels may wrap onto two lines */
+  vertical-align: bottom;  /* keeps one-line headers level with wrapped ones */
+}
+
+/* The first column holds labels rather than numbers, so it is left-aligned,
+   and long labels may wrap so the table fits narrow screens */
+th:first-child, td:first-child {
+  text-align: left;
+  white-space: normal;
+}
+
+
+/* ----------------------------------------------------------------------
+   CONTACT DETAILS
+   A two-column list: label on the left, detail on the right.
+   ---------------------------------------------------------------------- */
+.contact-list {
+  display: grid;
+  grid-template-columns: 9.5em minmax(0, 1fr);
+  column-gap: 2.5em;
+  row-gap: 0.7em;
+  margin: 1.4em 0 0;
+}
+
+.contact-list dt {
+  color: var(--muted);
+}
+
+.contact-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;   /* lets a long address break rather than overflow on phones */
+}
+
+
+/* ----------------------------------------------------------------------
+   FOOTER
+   The smaller font size is set on the paragraph, not the footer itself:
+   the column width is measured in em, so shrinking the whole footer would
+   also shrink its column and push the text out of line with the page.
+   ---------------------------------------------------------------------- */
+.site-footer {
+  background: var(--mist);
+  color: var(--muted);
+}
+
+.site-footer .wrap {
+  padding-top: 1.4em;
+  padding-bottom: 1.4em;
+}
+
+.site-footer p {
+  margin: 0;
+  font-size: 0.88em;
+}
+
+
+/* ----------------------------------------------------------------------
+   PHONES AND NARROW WINDOWS (below 700px wide)
+   ---------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  body {
+    font-size: 1.0625rem;          /* 17px */
+  }
+
+  .wrap {
+    padding-left: 1.1em;
+    padding-right: 1.1em;
+  }
+
+  .masthead .wrap {
+    padding-top: 1.8em;
+  }
+
+  .site-name {
+    font-size: 1.95em;
+  }
+
+  main.wrap {
+    padding-top: 2em;
+  }
+
+  /* Entries stack into a single column: title, then facts, then text */
+  .entry {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "head"
+      "meta"
+      "body";
+    padding: 1.6em 0;
+  }
+
+  /* The facts sit in a wrapping row under the title instead of a column */
+  .entry-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.1em 1.3em;
+    padding-top: 0.2em;
+    margin-bottom: 0.9em;
+  }
+
+  .entry-meta p {
+    margin: 0;
+  }
+
+  .entry-sub {
+    margin-bottom: 0.4em;
+  }
+
+  table {
+    font-size: 0.86em;             /* slightly smaller table text on phones */
+  }
+
+  th, td {
+    padding: 0.3em 0.4em;          /* tighter table cells so tables fit the screen */
+  }
+
+  .contact-list {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 0.1em;
+  }
+
+  .contact-list dd {
+    margin-bottom: 0.7em;
+  }
+}
+
+
+/* ----------------------------------------------------------------------
+   PRINTING
+   Prints in black on white, hides the menu, and writes each web address
+   after its link so a paper copy still says where things are.
+   ---------------------------------------------------------------------- */
+@media print {
+  .masthead {
+    background: none;
+    color: #000000;
+    border-bottom: 1px solid #000000;
+  }
+  .site-name a,
+  .affiliation {
+    color: #000000;
+  }
+  .site-nav,
+  .skip,
+  .site-footer {
+    display: none;
+  }
+  a {
+    color: #000000;
+  }
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+}
