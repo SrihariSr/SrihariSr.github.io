@@ -224,11 +224,6 @@ main > .section-title:first-child {
   margin-top: 0;
 }
 
-/* The opening paragraph on the home page, set slightly larger */
-.lead {
-  font-size: 1.1em;
-}
-
 /* The home page introduction: text and photo side by side.
    Flexbox lets the text take whatever width the photo leaves, so if the
    photo is missing the text fills the whole column on its own. */
