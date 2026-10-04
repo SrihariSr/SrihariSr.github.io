@@ -229,6 +229,42 @@ main > .section-title:first-child {
   font-size: 1.1em;
 }
 
+/* The home page introduction: text and photo side by side.
+   Flexbox lets the text take whatever width the photo leaves, so if the
+   photo is missing the text fills the whole column on its own. */
+.intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.5em;
+}
+
+.intro-text {
+  flex: 1;
+  min-width: 0;           /* lets long words wrap instead of pushing the photo out */
+}
+
+.intro-text p:last-child {
+  margin-bottom: 0;
+}
+
+/* The photo: a fixed-width portrait, cropped to a 4:5 frame.
+   object-fit: cover fills the frame without stretching the face; any
+   extra is trimmed from the edges. */
+.portrait {
+  flex: 0 0 10.5em;
+  margin: 0.3em 0 0;
+}
+
+.portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--mist);    /* shown for a moment while the photo loads */
+}
+
 /* Bulleted lists use small sage bullets */
 .plain-list {
   margin: 0.8em 0 0;
@@ -359,6 +395,11 @@ th, td {
   white-space: nowrap;
 }
 
+/* Numbers line up with the first line of a wrapped label beside them */
+td {
+  vertical-align: baseline;
+}
+
 th {
   font-weight: normal;
   white-space: normal;     /* long header labels may wrap onto two lines */
@@ -440,6 +481,19 @@ th:first-child, td:first-child {
 
   main.wrap {
     padding-top: 2em;
+  }
+
+  /* On phones the photo moves above the text and gets smaller.
+     column-reverse shows the last item (the photo) first. */
+  .intro {
+    flex-direction: column-reverse;
+    gap: 1.3em;
+  }
+
+  .portrait {
+    flex-basis: auto;
+    width: 9em;
+    margin-top: 0;
   }
 
   /* Entries stack into a single column: title, then facts, then text */
