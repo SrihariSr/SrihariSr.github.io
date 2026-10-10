@@ -62,11 +62,11 @@
 
         <p><span class="runin">The question.</span> This paper takes a convolutional network trained on data from NASA's Kepler mission, freezes it, deploys it unchanged on data from its successor, TESS, and asks which stage of the pipeline fails when it falls short, and why.</p>
 
-        <p><span class="runin">The pipeline.</span> Light curves are detrended and searched for periodic dips with Box Least Squares, then folded into a global and a local view and scored by a two-branch convolutional network following Shallue and Vanderburg (2018), trained on 6,726 Kepler Objects of Interest. On held-out Kepler data it reaches 0.945 PR-AUC, against 0.918 for an XGBoost baseline built on 19 hand-engineered statistics of the same views. Rule-based vetting and a four-check screen (secondary eclipses, known TESS systematic periods, period aliases and consistency across sectors) follow the network.</p>
+        <p><span class="runin">The pipeline.</span> Light curves are detrended and searched for periodic dips with Box Least Squares, then folded into a global and a local view and scored by a two-branch convolutional network following Shallue and Vanderburg (2018), built from 6,726 Kepler Objects of Interest split by host star, 4,680 of them for training. On held-out Kepler data it reaches 0.945 PR-AUC, against 0.918 for an XGBoost baseline built on 19 hand-engineered statistics of the same views. Rule-based vetting and a four-check screen (secondary eclipses, known TESS systematic periods, period aliases and consistency across sectors) follow the network.</p>
 
         <p><span class="runin">Three TESS populations.</span> On 1,102 confirmed planets the frozen network recovers 62.2% at a score of 0.5 or more with both vetting rules passed. Across 4,002 unresolved TESS Objects of Interest it endorses 1,564 at a score of 0.9 or more; of the 30 highest ranked, 10 survive all four checks, and all 10 are already known candidates, so this is a positive control on the ranking rather than a discovery. Among 474 faint stars absent from the TESS Objects of Interest catalogue, no candidate survives screening.</p>
 
-        <p><span class="runin">What the analysis shows.</span> A ten-seed ablation finds that the local view alone is statistically indistinguishable from the full network (Welch p = 0.83), so the global branch, 86% of the parameters, adds at most 0.005 PR-AUC at 95% confidence. On faint stars, 41.6% of detected periods fall within 10% of TESS's 13.7-day orbital period. Because each input view is normalised by its own minimum, the network sees the shape of a transit but not its depth, and its scores are indifferent to these systematics: a median of 0.030 near 13.7 days against 0.032 elsewhere.</p>
+        <p><span class="runin">What the analysis shows.</span> A ten-seed ablation finds that the local view alone is statistically indistinguishable from the full network (Welch p = 0.83), so the global branch, 86% of the parameters, adds at most 0.005 PR-AUC at 95% confidence. On faint stars, 41.6% of detected periods fall within 10% of TESS's 13.7-day orbital period, a 7.6-fold excess over chance, and the network's scores are indifferent to them: a median of 0.030 near 13.7 days against 0.032 elsewhere. Each input view is normalised by its own minimum, so the network sees the shape of a transit but not its absolute depth, which is the leading candidate explanation for that indifference.</p>
 
         <!-- Figures copied from the ablation table in the Stellaris README -->
         <div class="table-scroll">
@@ -105,6 +105,7 @@
         <p>IEEE conference, 2023</p>
         <p>Sole author</p>
         <p>Written at school in Dubai</p>
+        <p>Cited 6 times; 480 full-text views</p>
         <p>[<a href="https://doi.org/10.1109/C2I659362.2023.10430931">doi</a>]</p>
       </div>
 
@@ -156,11 +157,11 @@
       </div>
 
       <div class="entry-meta">
-        <p>Since September 2026</p>
+        <p>Since August 2026</p>
       </div>
 
       <div class="entry-body">
-        <p>A low-overhead detector that runs inside the training loop to catch poisoned or backdoored documents while a language model is being pretrained, rather than after training has finished. Experiments build on <a href="projects.html#aether">Aether</a>, my from-scratch language model.</p>
+        <p>A method for detecting poisoned or backdoored documents in the data a language model is pretrained on, a security risk for any model trained on web-scale text. Supervised by Prof. Ligang He at the University of Warwick, with a paper in preparation for ICML 2027. Experiments build on <a href="projects.html#aether">Aether</a>, my from-scratch language model.</p>
       </div>
     </article>
 

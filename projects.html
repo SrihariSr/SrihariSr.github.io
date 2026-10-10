@@ -103,13 +103,17 @@
       <div class="entry-meta">
         <p>Metal, Python</p>
         <p>Under review</p>
-        <p>[<a href="https://github.com/pytorch/pytorch/issues/198182">issue</a>] [<a href="https://gist.github.com/SrihariSr/f012cea8afd73941932d6e9f0a10c4f3">benchmarks</a>]</p>
+        <p>[<a href="https://github.com/pytorch/pytorch/issues/198182">issue</a>] [<a href="https://gist.github.com/SrihariSr/f8119cd70be1e4d4c9c8a0b5bf483edb">kernels</a>] [<a href="https://gist.github.com/SrihariSr/f012cea8afd73941932d6e9f0a10c4f3">benchmarks</a>]</p>
       </div>
 
       <div class="entry-body">
         <p>On Apple GPUs, PyTorch runs matrix multiplication either through MPSGraph or through its own native Metal kernels. Benchmarking both on an Apple M4 Max with a September 2026 nightly build, I found that the native kernel took 6.0 to 9.8 times as long as MPSGraph on typical shapes (a median of 7.9 times, roughly 1.1 to 1.4 TFLOPS against 7.8 to 12.0), and 11.6 to 15.4 times as long on shapes with a small output and a large inner dimension, such as 25 × 40000 × 25. The two paths agreed numerically.</p>
 
-        <p>I opened issue #198182 proposing a rewrite of the native kernels with simdgroup matrices. A maintainer asked for the rewrite as a gist, noting that if it matched Apple's MPP path, PyTorch should simply dispatch to it, and I committed to comparing it against the current Metal kernel, MPSGraph and MPP across float32, float16 and bfloat16. I have written the kernel and shared it with the maintainers, and it is awaiting their review.</p>
+        <p>I opened issue #198182 proposing a rewrite of the native kernels with simdgroup matrices. A maintainer asked for the rewrite as a gist, noting that if it matched Apple's MPP path, PyTorch should simply dispatch to it, and I committed to comparing it against the current Metal kernel, MPSGraph and MPP across float32, float16 and bfloat16. I have written the kernels and shared them with the maintainers, and they are awaiting review.</p>
+
+        <p><span class="runin">The kernels.</span> The rewrite chooses a kernel by data type: a register-blocked kernel for float32, and one built on simdgroup matrices for float16 and bfloat16. Both have a split-K path that spreads a long inner sum across the GPU when the output is too small to keep it busy. From 1024 &times; 1024 &times; 1024 upwards they are 2.1 to 2.9 times faster than the shipped kernel in float32, and 2.4 to 4.3 times faster in float16 and bfloat16. On 25 &times; 40000 &times; 25 they are about 7 times faster, beating MPSGraph by 1.2 times and MPP by 5.4 to 6.3 times, and split-K also lowers the float32 error on long sums (maximum relative error 4.2e-7 to 7.2e-7, against 1.6e-6 to 6.4e-6).</p>
+
+        <p><span class="runin">Checking.</span> All 48 correctness cases, 16 per data type, pass against a float64 reference, including transposed, offset and uneven split-K inputs. Outputs are filled with NaN before each run, so any element a kernel fails to write shows up as a failure. The kernels still lose at 256 &times; 256 &times; 256 (0.73 to 0.87 times the shipped kernel), and on large square shapes MPSGraph remains about twice as fast.</p>
       </div>
     </article>
 
@@ -126,6 +130,7 @@
       <div class="entry-meta">
         <p>Python, PyTorch, Claude API</p>
         <p>Push to Prod hackathon, Bengaluru</p>
+        <p>Aug 2026</p>
         <p>[<a href="https://github.com/SrihariSr/Foundry">code</a>]</p>
       </div>
 
